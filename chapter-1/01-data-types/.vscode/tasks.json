@@ -1,0 +1,97 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        // Clean Task (Common for Both Compilers)
+        {
+            "label": "Clean C++ Project",
+            "type": "shell",
+            "command": "cmd",
+            "args": [
+                "/C",
+                "if exist bin rd /S /Q bin & if exist build rd /S /Q build & for /R . %f in (*.i *.pdb *.cod, *.pdb) do del \"%f\""
+            ],
+            "problemMatcher": []
+        },
+        // Run the Executable 
+        {
+            "label": "Run the Executable",
+            "type": "shell",
+            "command": "cmd",
+            "args": [
+                "/C",
+                "bin\\program.exe"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": false
+            },
+            "problemMatcher": []
+        },
+		// Run PIO Executable
+		{
+            "label": "Run PIO Executable",
+            "type": "shell",
+            "command": "cmd",
+            "args": [
+                "/C",
+                ".pio\\build\\native_msys2\\program.exe"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": false
+            },
+            "problemMatcher": []
+        },
+        // MinGW GCC Build Task
+        {
+            "label": "Build with MinGW",
+            "type": "shell",
+            "command": "cmd",
+            "args": [
+                "/C",
+                "if not exist bin mkdir bin & if not exist build mkdir build & for /R src %f in (*.cpp *.cc) do (g++ -std=c++20 -g -c %f -o build\\%~nf.o) & for /R build %f in (*.o) do ( echo %f | sed \"s/\\\\/\\//g\" >> build/objects.txt ) & g++ @build/objects.txt -L lib -o bin/program.exe"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [],
+            "dependsOn": "Clean C++ Project"
+        },
+
+        // Multiple File Build with MinGW (Verbose)
+        {
+            "label": "Multiple File Build with MinGW (Verbose)",
+            "type": "shell",
+            "command": "cmd",
+            "args": [
+                "/C",
+                "call cfg/mingw_multi_file_build.bat"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [],
+            "dependsOn": "Clean C++ Project"
+        },
+        
+        // Run MinGW Executable
+        {
+            "label": "Run MinGW Executable",
+            "type": "shell",
+            "command": "cmd",
+            "args": [
+                "/C",
+                "bin\\program.exe"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": false
+            },
+            "dependsOn": "Multiple File Build with MinGW (Verbose)",
+            "problemMatcher": []
+        }
+    ]
+}
+
